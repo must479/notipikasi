@@ -9,14 +9,14 @@ export default function Notifications() {
   const [isSocketConnected, setIsSocketConnected] = useState(false)
   const [sdkSocket, setSdkSocket] = useState<any>()
 
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
 
   const UNISWAP_CHANNEL_ADDRESS = '0x97E5271f2987c7A3450e21dD7FFe4D004ddE773E' // Uniswap V3 channel address
 
   useEffect(() => {
     if (account) {
       const sdkSocket = createSocketConnection({
-        user: `eip155:5:${account}`, // user address in CAIP
+        user: `eip155:${chainId}:${account}`, // user address in CAIP
         env: 'prod',
         socketOptions: { autoConnect: true },
       })
@@ -30,7 +30,7 @@ export default function Notifications() {
         }
       }
     }
-  }, [account])
+  }, [account, chainId])
 
   const addSocketEvents = (sdkSocket: any) => {
     sdkSocket?.on(EVENTS.CONNECT, () => {
@@ -90,7 +90,7 @@ export default function Notifications() {
   const getNotifications = async () => {
     PushAPI.user
       .getFeeds({
-        user: `eip155:5:${account}`, // user address in CAIP
+        user: `eip155:${chainId}:${account}`, // user address in CAIP
         env: 'prod',
         page: 1,
         limit: 10,

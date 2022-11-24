@@ -6,11 +6,11 @@ This is a simple example of how to use push notifications in a web3 dapp. It use
 
 #### Packages used
 
-1. @pushprotocol/restapi - opt-in to channels, send and receive notifications to the user's Dapp
+1. `@pushprotocol/restapi` - opt-in to channels, send and receive notifications to the user's Dapp
 
-2. @pushprotocol/uiweb - to display the notification in the dapp
+2. `@pushprotocol/uiweb` - to display the notification in the dapp
 
-3. @pushprotocol/socket - to connect and receive real-time notifications from push's websocket server
+3. `@pushprotocol/socket` - to connect and receive real-time notifications from push's websocket server
 
 #### Customizations did to the original uniswap interface
 
@@ -18,7 +18,7 @@ This is a simple example of how to use push notifications in a web3 dapp. It use
 
 2. Added a new route to the dapp `src/pages/App.tsx` as `/notifications`
 
-3. Added Navbar Link to the notifications page
+3. Added Navbar item link to the notifications page
 
 #### Getting Persisted notifications:
 
