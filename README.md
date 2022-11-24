@@ -1,51 +1,81 @@
-# Uniswap Labs Interface
+## Push Notifications for Web3 Dapps
 
-[![Unit Tests](https://github.com/Uniswap/interface/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/Uniswap/interface/actions/workflows/unit-tests.yaml)
-[![Integration Tests](https://github.com/Uniswap/interface/actions/workflows/integration-tests.yaml/badge.svg)](https://github.com/Uniswap/interface/actions/workflows/integration-tests.yaml)
-[![Lint](https://github.com/Uniswap/interface/actions/workflows/lint.yml/badge.svg)](https://github.com/Uniswap/interface/actions/workflows/lint.yml)
-[![Release](https://github.com/Uniswap/interface/actions/workflows/release.yaml/badge.svg)](https://github.com/Uniswap/interface/actions/workflows/release.yaml)
-[![Crowdin](https://badges.crowdin.net/uniswap-interface/localized.svg)](https://crowdin.com/project/uniswap-interface)
+This is a simple example of how to use push notifications in a web3 dapp. It uses the [Push Protocol](https://push.org/) to receive push notifications(both persisted and real-time) from another dapp or channel.
 
-An open source interface for Uniswap -- a protocol for decentralized exchange of Ethereum tokens.
+**This project is the fork of uniswap's interface to demonstrate how to integrate push notifications in a web3 dapp.**
 
-- Website: [uniswap.org](https://uniswap.org/)
-- Interface: [app.uniswap.org](https://app.uniswap.org)
-- Docs: [uniswap.org/docs/](https://docs.uniswap.org/)
-- Twitter: [@Uniswap](https://twitter.com/Uniswap)
-- Reddit: [/r/Uniswap](https://www.reddit.com/r/Uniswap/)
-- Email: [contact@uniswap.org](mailto:contact@uniswap.org)
-- Discord: [Uniswap](https://discord.gg/FCfyBSbCU5)
-- Whitepapers:
-  - [V1](https://hackmd.io/C-DvwDSfSxuh-Gd4WKE_ig)
-  - [V2](https://uniswap.org/whitepaper.pdf)
-  - [V3](https://uniswap.org/whitepaper-v3.pdf)
+#### Packages used
 
-## Accessing the Uniswap Interface
+1. @pushprotocol/restapi - opt-in to channels, send and receive notifications to the user's Dapp
 
-To access the Uniswap Interface, use an IPFS gateway link from the
-[latest release](https://github.com/Uniswap/uniswap-interface/releases/latest),
-or visit [app.uniswap.org](https://app.uniswap.org).
+2. @pushprotocol/uiweb - to display the notification in the dapp
 
-## Unsupported tokens
+3. @pushprotocol/socket - to connect and receive real-time notifications from push's websocket server
 
-Check out `useUnsupportedTokenList()` in [src/state/lists/hooks.ts](./src/state/lists/hooks.ts) for blocking tokens in your instance of the interface.
+#### Customizations did to the original uniswap interface
 
-You can block an entire list of tokens by passing in a tokenlist like [here](./src/constants/lists.ts)
+1. Added a new page to the dapp to display the notifications `src/pages/Notifications/index.tsx`
 
-## Contributions
+2. Added a new route to the dapp `src/pages/App.tsx` as `/notifications`
 
-For steps on local deployment, development, and code contribution, please see [CONTRIBUTING](./CONTRIBUTING.md).
+3. Added Navbar Link to the notifications page
 
-## Accessing Uniswap V2
+#### Getting Persisted notifications:
 
-The Uniswap Interface supports swapping, adding liquidity, removing liquidity and migrating liquidity for Uniswap protocol V2.
+```javascript
+await PushAPI.user.getFeeds({
+  user: 'eip155:5:0xD8634C39BBFd4033c0d3289C4515275102423681', // user address in CAIP
+  env: 'staging', // or 'prod'
+  page: 1,
+  limit: 10,
+  raw: true,
+  spam: false,
+})
+```
 
-- Swap on Uniswap V2: https://app.uniswap.org/#/swap?use=v2
-- View V2 liquidity: https://app.uniswap.org/#/pool/v2
-- Add V2 liquidity: https://app.uniswap.org/#/add/v2
-- Migrate V2 liquidity to V3: https://app.uniswap.org/#/migrate/v2
+#### Getting Real-time notifications:
 
-## Accessing Uniswap V1
+```javascript
+import { createSocketConnection, EVENTS } from '@pushprotocol/socket'
 
-The Uniswap V1 interface for mainnet and testnets is accessible via IPFS gateways
-linked from the [v1.0.0 release](https://github.com/Uniswap/uniswap-interface/releases/tag/v1.0.0).
+const sdkSocket = createSocketConnection({
+  user: `eip155:5:0xD8634C39BBFd4033c0d3289C4515275102423681`, // user address in CAIP
+  env: 'staging', // or 'prod'
+  socketOptions: { autoConnect: true },
+})
+
+sdkSocket.on(EVENTS.USER_FEEDS, (notification) => {
+  console.log('received a new notification:', notification)
+})
+```
+
+#### Filtering notifications by channel:
+
+```javascript
+const notifications = await PushAPI.user.getFeeds({
+  user: 'eip155:5:0xD8634C39BBFd4033c0d3289C4515275102423681', // user address in CAIP
+  env: 'staging', // or 'prod'
+  page: 1,
+  limit: 10,
+  raw: true,
+  spam: false,
+})
+
+const UNISWAP_CHANNEL_ADDRESS = '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984'
+const uniswapNotifications = notifications.filter(({ sender }) => sender === UNISWAP_CHANNEL_ADDRESS)
+
+console.log('uniswap notifications:', uniswapNotifications)
+```
+
+### Getting Started
+
+```bash
+yarn install
+yarn start
+```
+
+#### Demo:
+
+https://user-images.githubusercontent.com/29351207/203759666-67a31f1d-5cf8-473a-901c-8eb43c919ebd.mp4
+
+![Screenshot1](https://github.com/Salmandabbakuti/uniswap-interface/blob/main/resources/notifications-screenshot.png)
