@@ -78,4 +78,4 @@ yarn start
 
 https://user-images.githubusercontent.com/29351207/203759666-67a31f1d-5cf8-473a-901c-8eb43c919ebd.mp4
 
-![Screenshot1](https://github.com/Salmandabbakuti/uniswap-interface/blob/main/resources/notifications-screenshot.png)
+![Screenshot1](https://github.com/Salmandabbakuti/uniswap-interface/blob/main/resources/notifications_screenshot.png)
